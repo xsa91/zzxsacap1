@@ -1,0 +1,38 @@
+ID: zzxsacap1
+_schema-version: "2.1"
+version: 0.0.1
+modules:
+  - name: zzxsacap1-db
+    type: hdb
+    path: db
+    parameters:
+      memory: 256M
+      disk-quota: 512M
+    requires:
+      - name: zzxsacap1-db-hdi-container
+  - name: zzxsacap1-srv
+    type: nodejs
+    path: srv
+    parameters:
+      memory: 512M
+      disk-quota: 512M
+    provides:
+      - name: srv_api
+        properties:
+          url: ${default-url}
+    requires:
+      - name: zzxsacap1-db-hdi-container
+      - name: zzxsacap1-uaa
+resources:
+  - name: zzxsacap1-db-hdi-container
+    type: com.sap.xs.hdi-container
+    properties:
+      hdi-container-name: ${service-name}
+  - name: zzxsacap1-uaa
+    type: org.cloudfoundry.managed-service
+    parameters:
+      service-plan: default
+      service: xsuaa
+      path_config:
+        xsappname: zzxsacap1
+        tenant-mode: dedicated
